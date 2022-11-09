@@ -150,5 +150,8 @@
         }
       ]
     ]
+  },
+  "dependencies": {
+    "@libp2p/interface-peer-id": "^1.0.6"
   }
 }
