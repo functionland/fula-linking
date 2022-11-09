@@ -11,7 +11,7 @@ npm install rn-fula-linking
 ## Usage
 
 ```js
-import { multiply } from 'rn-fula-linking';
+import { encodeIdentity, decodeIdentity } from 'rn-fula-linking';
 
 // ...
 
@@ -31,7 +31,9 @@ cd fula-linking
 yarn
 ```
 ```js
-yarn example android (or ios)
+cd example
+
+npm start
 ```
 
 
