@@ -7,14 +7,11 @@ import SvgQRCode from 'react-native-qrcode-svg';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 
 export default function App() {
-  const [qrCode, setQrCode] = useState<string | undefined>();
+  const [qrCode, setQrCode] = useState<string | undefined>("");
   const [mode, setMode] = useState<'login' | 'add' | undefined>();
 
   const [hasPermission, setHasPermission] = useState<Boolean | undefined>();
   const [scannedIdentity, setScannedIdentity] = useState<any>();
-  
-  //Get unique device id (MAC ADDRESS equivalent)
-  const uniqueId = getUniqueId();
 
   const backAction = () => {
     setMode(undefined);
