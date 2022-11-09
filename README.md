@@ -15,7 +15,7 @@ import { encodeIdentity, decodeIdentity } from 'rn-fula-linking';
 
 // ...
 
-const result = await multiply(3, 7);
+const result = await encodeIdentity({ did: 'testdid', peerId: 'testpeerid' });
 ```
 
 ## Running Example Application
