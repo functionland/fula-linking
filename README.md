@@ -36,6 +36,7 @@ cd example
 yarn start
 ```
 
+Scan the generated QR code with Expo Go mobile appliaction on your phone
 
 ## Contributing
 
