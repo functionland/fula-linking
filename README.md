@@ -33,7 +33,7 @@ yarn
 ```js
 cd example
 
-npm start
+yarn start
 ```
 
 
