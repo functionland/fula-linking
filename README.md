@@ -18,6 +18,23 @@ import { multiply } from 'rn-fula-linking';
 const result = await multiply(3, 7);
 ```
 
+## Running Example Application
+
+On you phone install Expo Go Client
+
+clone the repository and run the below commands
+
+```sh
+cd fula-linking
+
+yarn
+```
+
+```js
+yarn example android (or ios)
+```
+
+
 ## Contributing
 
 See the [contributing guide](CONTRIBUTING.md) to learn how to contribute to the repository and the development workflow.
