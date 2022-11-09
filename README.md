@@ -26,10 +26,10 @@ clone the repository and run the below commands
 
 ```sh
 cd fula-linking
-
+```
+```sh
 yarn
 ```
-
 ```js
 yarn example android (or ios)
 ```
