@@ -5,7 +5,7 @@ import { StyleSheet, View, Button, Text, BackHandler } from 'react-native';
 import { encodeIdentity, decodeIdentity } from 'rn-fula-linking';
 import SvgQRCode from 'react-native-qrcode-svg';
 import { BarCodeScanner } from 'expo-barcode-scanner';
-import DeviceInfo from 'react-native-device-info';
+import { getUniqueId } from 'react-native-device-info';
 
 export default function App() {
   const [qrCode, setQrCode] = useState<string | undefined>();
@@ -13,6 +13,9 @@ export default function App() {
 
   const [hasPermission, setHasPermission] = useState<Boolean | undefined>();
   const [scannedIdentity, setScannedIdentity] = useState<any>();
+  
+  //Get unique device id (MAC ADDRESS equivalent)
+  const uniqueId = getUniqueId();
 
   const backAction = () => {
     setMode(undefined);
