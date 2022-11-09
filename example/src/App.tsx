@@ -5,7 +5,6 @@ import { StyleSheet, View, Button, Text, BackHandler } from 'react-native';
 import { encodeIdentity, decodeIdentity } from 'rn-fula-linking';
 import SvgQRCode from 'react-native-qrcode-svg';
 import { BarCodeScanner } from 'expo-barcode-scanner';
-import { getUniqueId } from 'react-native-device-info';
 
 export default function App() {
   const [qrCode, setQrCode] = useState<string | undefined>();
