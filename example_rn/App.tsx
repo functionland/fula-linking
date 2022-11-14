@@ -57,24 +57,21 @@ const App = () => {
       let mConfig = JSON.parse(mConfigStr);
       let testFilePath = Dirs.CacheDir + '/test.txt';
       let privateRef = JSON.stringify(mConfig.private_ref);
-
+      console.log('privateRef', privateRef);
       //We encode the identity of type { did: string; peerId: PeerId } to create a string from it
       //The encode function returns a Promise
       encodeIdentity({
-        did: privateRef,
+        did: 'did:key:wuihetyrjhgvmdsjbiuerjdfcjuhuighl',
         peerId:
           '/ip4/7.7.7.7/tcp/4242/p2p/QmYyQSo1c1Ym7orWxLYvCrM2EmxFTANf8wXmmE7DWjhx5N',
       }).then(response => {
         setQrCode(response);
       });
       FileSystem.writeFile(testFilePath, 'Hello, World!', 'utf8');
-      mCid = await writeFile(
-        dbPath,
-        mCid,
-        privateRef,
-        'root/test.txt',
-        testFilePath,
-      );
+      console.log("testFilePath", testFilePath);
+      console.log("dbPath", dbPath);
+      mCid = mConfig.cid;
+      await writeFile(dbPath, mCid, privateRef, 'root/test.txt', testFilePath);
     });
     return () => {
       BackHandler.removeEventListener('hardwareBackPress', backAction);
@@ -183,7 +180,11 @@ const App = () => {
             </View>
           </View>
         )}
-        {mode === 'login' && <SvgQRCode value={qrCode} />}
+        {mode === 'login' && (
+          <View style={styles.box}>
+            <SvgQRCode size={250} value={qrCode} />
+          </View>
+        )}
         {mode === 'add' && (
           <CameraScreen
             showFrame={true}
@@ -242,9 +243,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   box: {
-    width: 60,
-    height: 60,
-    marginVertical: 20,
+    width: 250,
+    height: 250,
+    marginVertical: 0,
   },
   centerText: {
     flex: 1,
