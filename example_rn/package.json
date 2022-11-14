@@ -10,13 +10,15 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
   },
   "dependencies": {
+    "@functionland/react-native-wnfs": "^0.1.0",
     "@libp2p/interface-peer-id": "^1.0.6",
     "react": "18.1.0",
     "react-native": "0.70.5",
     "react-native-camera-kit": "^13.0.0",
+    "react-native-file-access": "^2.5.0",
     "react-native-permissions": "^3.6.1",
     "react-native-qrcode-svg": "^6.1.2",
-    "react-native-svg": "^13.5.0",
+    "react-native-svg": "^12.1.0",
     "rn-fula-linking": "github:functionland/fula-linking"
   },
   "devDependencies": {

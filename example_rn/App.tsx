@@ -19,65 +19,19 @@ import {
   BackHandler,
   PermissionsAndroid,
   Platform,
-  NativeModules,
 } from 'react-native';
 
 import {encodeIdentity, decodeIdentity} from 'rn-fula-linking';
 import SvgQRCode from 'react-native-qrcode-svg';
 import {CameraScreen} from 'react-native-camera-kit';
-
-const LINKING_ERROR =
-  "The package 'react-native-wnfs' doesn't seem to be linked. Make sure: \n\n" +
-  Platform.select({ios: "- You have run 'pod install'\n", default: ''}) +
-  '- You rebuilt the app after installing the package\n' +
-  '- You are not using Expo Go\n';
-
-const Wnfs = NativeModules.Wnfs
-  ? NativeModules.Wnfs
-  : new Proxy(
-      {},
-      {
-        get() {
-          throw new Error(LINKING_ERROR);
-        },
-      },
-    );
-
-function createPrivateForest(dbPath: string): Promise<string> {
-  return Wnfs.createPrivateForest(dbPath);
-}
-
-function createRootDir(dbPath: string, cid: string): Promise<any> {
-  return Wnfs.createRootDir(dbPath, cid);
-}
-
-function writeFile(
-  dbPath: string,
-  cid: string,
-  privateRef: String,
-  filePath: String,
-  localFilePath: String,
-): Promise<string> {
-  return Wnfs.writeFile(dbPath, cid, privateRef, filePath, localFilePath);
-}
-
-function readFile(
-  dbPath: string,
-  cid: string,
-  privateRef: String,
-  filePath: String,
-): Promise<Uint8Array> {
-  return Wnfs.readFile(dbPath, cid, privateRef, filePath);
-}
-
-function ls(
-  dbPath: string,
-  cid: string,
-  privateRef: String,
-  filePath: String,
-): Promise<any> {
-  return Wnfs.ls(dbPath, cid, privateRef, filePath);
-}
+import {Dirs, FileSystem} from 'react-native-file-access';
+import {
+  createPrivateForest,
+  createRootDir,
+  writeFile,
+  readFile,
+  ls,
+} from '@functionland/react-native-wnfs';
 
 const App = () => {
   const [qrCode, setQrCode] = useState<string | undefined>('');
@@ -96,10 +50,31 @@ const App = () => {
   useEffect(() => {
     BackHandler.addEventListener('hardwareBackPress', backAction);
 
-    //We encode the identity of type { did: string; peerId: PeerId } to create a string from it
-    //The encode function returns a Promise
-    encodeIdentity({did: 'testdid', peerId: 'testpeerid'}).then(response => {
-      setQrCode(response);
+    const dbPath = Dirs.CacheDir + '/tmp';
+    createPrivateForest(dbPath).then(async mCid => {
+      let mConfigStr = await createRootDir(dbPath, mCid);
+
+      let mConfig = JSON.parse(mConfigStr);
+      let testFilePath = Dirs.CacheDir + '/test.txt';
+      let privateRef = JSON.stringify(mConfig.private_ref);
+
+      //We encode the identity of type { did: string; peerId: PeerId } to create a string from it
+      //The encode function returns a Promise
+      encodeIdentity({
+        did: privateRef,
+        peerId:
+          '/ip4/7.7.7.7/tcp/4242/p2p/QmYyQSo1c1Ym7orWxLYvCrM2EmxFTANf8wXmmE7DWjhx5N',
+      }).then(response => {
+        setQrCode(response);
+      });
+      FileSystem.writeFile(testFilePath, 'Hello, World!', 'utf8');
+      mCid = await writeFile(
+        dbPath,
+        mCid,
+        privateRef,
+        'root/test.txt',
+        testFilePath,
+      );
     });
     return () => {
       BackHandler.removeEventListener('hardwareBackPress', backAction);
