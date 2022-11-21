@@ -1,0 +1,4 @@
+[submodule "example_rn/packages/fula-sec"]
+	path = example_rn/packages/fula-sec
+	url = git@github.com:functionland/fula-sec.git
+	branch = main
