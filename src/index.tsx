@@ -1,9 +1,6 @@
-import type { PeerId } from '@libp2p/interface-peer-id'
-
-
 export function encodeIdentity(decodedIdentity: {
   did: string;
-  peerId: PeerId;
+  peerId: string;
 }): Promise<string> {
   let encodedIdentity = JSON.stringify({
     did: decodedIdentity.did,
@@ -14,7 +11,7 @@ export function encodeIdentity(decodedIdentity: {
 
 export function decodeIdentity(
   encodedIdentity: string
-): Promise<{ did: string; peerId: PeerId } | string> {
+): Promise<{ did: string; peerId: string } | string> {
   try {
     let decodedIdentity = JSON.parse(encodedIdentity);
     return Promise.resolve(decodedIdentity);

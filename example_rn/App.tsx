@@ -20,8 +20,7 @@ import {
   PermissionsAndroid,
   Platform,
 } from 'react-native';
-
-import {encodeIdentity, decodeIdentity} from 'rn-fula-linking';
+import {HDKEY, DID, EncryptJWT, DecryptJWT} from '@functionland/fula-sec';
 import SvgQRCode from 'react-native-qrcode-svg';
 import {CameraScreen} from 'react-native-camera-kit';
 import {Dirs, FileSystem} from 'react-native-file-access';
@@ -32,6 +31,36 @@ import {
   readFile,
   ls,
 } from '@functionland/react-native-wnfs';
+
+export function encodeIdentity(decodedIdentity: {
+  did: string;
+  peerId: string;
+}): Promise<string> {
+  let encodedIdentity = JSON.stringify({
+    did: decodedIdentity.did,
+    peerId: decodedIdentity.peerId,
+  });
+  return Promise.resolve(encodedIdentity);
+}
+
+export function decodeIdentity(
+  encodedIdentity: string
+): Promise<{ did: string; peerId: string } | string> {
+  try {
+    let decodedIdentity = JSON.parse(encodedIdentity);
+    return Promise.resolve(decodedIdentity);
+  } catch (e) {
+    let error = '';
+    if (e instanceof Error) {
+      error = e.message;
+    } else {
+      error = String(e);
+    }
+    Promise.reject(error);
+  }
+  return Promise.resolve('');
+}
+
 
 const App = () => {
   const [qrCode, setQrCode] = useState<string | undefined>('');
@@ -45,7 +74,6 @@ const App = () => {
     setScannedIdentity(undefined);
     return true;
   };
-
   //We wait for the application to load
   useEffect(() => {
     BackHandler.addEventListener('hardwareBackPress', backAction);
@@ -58,12 +86,35 @@ const App = () => {
       let testFilePath = Dirs.CacheDir + '/test.txt';
       let privateRef = JSON.stringify(mConfig.private_ref);
       console.log('privateRef', privateRef);
+      let secretKey = '123456789'
+      let signedKey = '9d7020006cf0696334ead54fffb859a8253e5a44860c211d23c7b6bf842d0c63535a5efd266a647cabdc4392df9a4ce28db7dc393318068d93bf33a32adb81ae';
+      const ed = new HDKEY(secretKey);
+      const chainCode = ed.chainCode;
+      const keyPair = ed.createEDKeyPair(signedKey);
+      const did = new DID(keyPair.secretKey);
+      did.did();
+      console.log('>> did: ', did.did())
+
+      const jwet = await new EncryptJWT({ wnfsKey: 'add wnfs key here' })
+      .setIssuedAt()
+      .setNotBefore(Math.floor(Date.now() / 1000))
+      .setIssuer(did.did())
+      .setAudience(did.did())
+      .setExpirationTime('10s')
+      .encrypt(keyPair.secretKey);
+  
+      console.log('jwet: ', jwet)
+  
+  setTimeout(async()=> {
+      const cyper = await new DecryptJWT(keyPair.secretKey).verify(jwet)
+      console.log('cyper: ', cyper)
+  }, 3000)
+
       //We encode the identity of type { did: string; peerId: PeerId } to create a string from it
       //The encode function returns a Promise
       encodeIdentity({
-        did: 'did:key:wuihetyrjhgvmdsjbiuerjdfcjuhuighl',
-        peerId:
-          '/ip4/7.7.7.7/tcp/4242/p2p/QmYyQSo1c1Ym7orWxLYvCrM2EmxFTANf8wXmmE7DWjhx5N',
+        did: did.did(),
+        peerId: 'peerID',
       }).then(response => {
         setQrCode(response);
       });
@@ -119,7 +170,7 @@ const App = () => {
   }
 
   //Here we give the result of scanned barcode to decodeIdentity to give us the did and peerId in json format
-  const onBarcodeScan = data => {
+  const onBarcodeScan = (data: string) => {
     setScanComplete(true);
     if (data) {
       decodeIdentity(data)
@@ -194,11 +245,13 @@ const App = () => {
             laserColor="red"
             // Color can be of your choice
             frameColor="white" // (default white) optional, color of border of scanner frame
+
             // Scanner Frame color
             onReadCode={event => {
               onBarcodeScan(event.nativeEvent.codeStringValue);
-            }}
-          />
+            } } cameraRatioOverlay={undefined} captureButtonImage={undefined} captureButtonImageStyle={undefined} cameraFlipImage={undefined} cameraFlipImageStyle={undefined} hideControls={undefined} torchOnImage={undefined} torchOffImage={undefined} torchImageStyle={undefined} onBottomButtonPressed={function (event: any): void {
+              throw new Error('Function not implemented.');
+            } }          />
         )}
         {scannedIdentity && scannedIdentity.did && (
           <View>
