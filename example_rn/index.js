@@ -2,7 +2,6 @@
  * @format
  */
 import 'node-libs-react-native/globals.js'
-import './shim.js'
 import 'react-native-get-random-values'
 import 'text-encoding-polyfill'
 import {AppRegistry} from 'react-native';
