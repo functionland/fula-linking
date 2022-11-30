@@ -28,8 +28,6 @@ import {
   createPrivateForest,
   createRootDir,
   writeFile,
-  readFile,
-  ls,
 } from '@functionland/react-native-wnfs';
 
 export function encodeIdentity(decodedIdentity: {
@@ -90,6 +88,7 @@ const App = () => {
       let signedKey = '9d7020006cf0696334ead54fffb859a8253e5a44860c211d23c7b6bf842d0c63535a5efd266a647cabdc4392df9a4ce28db7dc393318068d93bf33a32adb81ae';
       const ed = new HDKEY(secretKey);
       const chainCode = ed.chainCode;
+      console.log(chainCode);
       const keyPair = ed.createEDKeyPair(signedKey);
       const did = new DID(keyPair.secretKey);
       did.did();
@@ -134,21 +133,26 @@ const App = () => {
       if (Platform.OS === 'android') {
         async function requestCameraPermission() {
           try {
-            const granted = await PermissionsAndroid.request(
-              PermissionsAndroid.PERMISSIONS.CAMERA,
-              {
-                title: 'Camera Permission',
-                message: 'App needs permission for camera access',
-              },
-            );
-            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-              // If CAMERA Permission is granted
-              setHasPermission(true);
-            } else {
-              alert('CAMERA permission denied');
+            if(PermissionsAndroid?.PERMISSIONS?.CAMERA){
+              const granted = await PermissionsAndroid.request(
+
+                PermissionsAndroid.PERMISSIONS.CAMERA,
+
+                {
+                  title: 'Camera Permission',
+                  message: 'App needs permission for camera access',
+                  buttonPositive: 'Approve'
+                },
+              );
+              if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                // If CAMERA Permission is granted
+                setHasPermission(true);
+              } else {
+                console.log('CAMERA permission denied');
+              }
             }
           } catch (err) {
-            alert('Camera permission err', err);
+            console.log('Camera permission err', err);
             console.warn(err);
           }
         }
@@ -246,12 +250,24 @@ const App = () => {
             // Color can be of your choice
             frameColor="white" // (default white) optional, color of border of scanner frame
 
+
             // Scanner Frame color
             onReadCode={event => {
               onBarcodeScan(event.nativeEvent.codeStringValue);
-            } } cameraRatioOverlay={undefined} captureButtonImage={undefined} captureButtonImageStyle={undefined} cameraFlipImage={undefined} cameraFlipImageStyle={undefined} hideControls={undefined} torchOnImage={undefined} torchOffImage={undefined} torchImageStyle={undefined} onBottomButtonPressed={function (event: any): void {
+            } } 
+            cameraRatioOverlay={undefined} 
+            captureButtonImage={undefined} 
+            cameraFlipImage={undefined} 
+            hideControls={undefined} 
+            torchOnImage={undefined} 
+            torchOffImage={undefined} 
+            onBottomButtonPressed={function (event: any): void {
+              console.log(event);
               throw new Error('Function not implemented.');
-            } }          />
+            } } 
+            captureButtonImageStyle={{}} 
+            cameraFlipImageStyle={{}} 
+            torchImageStyle={{}}          />
         )}
         {scannedIdentity && scannedIdentity.did && (
           <View>
